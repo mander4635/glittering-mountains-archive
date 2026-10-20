@@ -36,7 +36,7 @@ custom-foot: js/timeline-js.html
 
 {{ content }}
 
-d: "-01" | date: "%B %Y" }}</a> to <a href="#m{{ uniqueMonths | last | strip }}">{{ uniqueMonths | last | strip | append: "-01" | date: "%B %Y" }}</a></h3>
+<h3><a href="#m{{ uniqueMonths | first | strip }}">{{ uniqueMonths | first | strip | append: "-01" | date: "%B %Y" }}</a> to <a href="#m{{ uniqueMonths | last | strip }}">{{ uniqueMonths | last | strip | append: "-01" | date: "%B %Y" }}</a></h3>
 
 <table id="timeline" class="table table-striped">
     <tbody>
