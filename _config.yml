@@ -27,7 +27,7 @@ tagline: Photographs from the adventures of J.M. Thorington, 1922-25
 # this description might appear in search result lists, keep around 160 characters max
 description: 'This collection analyzes bias in photographs from the "The Glittering Mountains of Canada" (1925), a travel guide for the Canadian Rocky mountains.'
 # creator of the digital collection, to appear in meta tags; we typically use our GitHub usernames but feel free to just use your name
-author: Madison Anderson
+author: mander4635
 
 ##########
 # COLLECTION SETTINGS
@@ -49,7 +49,7 @@ metadata: gmcjmt-data
 # ROBOTS EXCLUDE
 #
 # set noindex to true if you do NOT want Google to index your site
-# noindex: true 
+# noindex: false
 
 ##########
 # BUILD SETTINGS 
