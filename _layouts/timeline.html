@@ -14,43 +14,43 @@ custom-foot: js/timeline-js.html
 {% endif %}
 {%- assign items = items | where_exp: 'item','item[field]' -%}
 {%- assign raw-dates = items | map: field | compact | uniq -%}
-{%- capture clean-years -%}{% for date in raw-dates %}{% if date contains "-" %}{{ date | strip | split: "-" | first }}{% elsif date contains "/" %}{{ date | strip | split: "/" | last }}{% else %}{{ date | strip }}{% endif %}{% unless forloop.last %};{% endunless %}{%- endfor -%}{%- endcapture -%}
-{%- assign uniqueYears = clean-years | replace: ";;",";" | split: ";" | compact | uniq | sort -%}
+{%- capture clean-months -%}{% for date in raw-dates %}{% if date contains "-" %}{% assign parts = date | strip | split: "-" %}{{ parts[0] }}-{{ parts[1] }}{% elsif date contains "/" %}{% assign parts = date | strip | split: "/" %}{{ parts[2] }}-{{ parts[0] }}{% else %}{{ date | strip }}{% endif %}{% unless forloop.last %};{% endunless %}
+{% endfor %}
+{%- endcapture -%}
+{%- assign uniqueMonths = clean-months | replace: ";;",";" | split: ";" | compact | uniq | sort -%}
+
 {%- if site.data.theme.year-navigation -%}
-{%- assign navYears = site.data.theme.year-navigation | split: ";" -%}
-{%- elsif site.data.theme.year-nav-increment -%}
-{%- capture navYears -%}
-{%- for i in uniqueYears -%}{%- assign t = i | modulo: site.data.theme.year-nav-increment -%}
-{%- if t == 0 -%}{{ i }}{% unless forloop.last %};{% endunless %}{% endif %}{% endfor %}{%- endcapture -%}
-{%- assign navYears = navYears | split: ";" -%}
+{%- assign navMonths = site.data.theme.year-navigation | split: ";" -%}
+{%- elsif site.data.theme.year-nav-increment -%}{%- assign navMonths = uniqueMonths -%}
 {%- endif -%}
-{%- if navYears -%}
+
+{%- if navMonths -%}
 <div class="dropdown float-end" id="year-nav">
     <button class="btn btn-primary dropdown-toggle" type="button" id="yearButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Year
+        Month
     </button>
     <div class="dropdown-menu" aria-labelledby="yearButton">
-        {% for y in navYears %}
-        <a class="dropdown-item" href="#y{{ y }}">{{ y }}</a>{% endfor %}
+        {% for m in navMonths %}
+        <a class="dropdown-item" href="#m{{ m }}">{{ m | append: "-01" | date: "%B %Y" }}</a>{% endfor %}
     </div>
 </div>
 {%- endif -%}
 
 {{ content }}
 
-<h3><a href="#y{{ uniqueYears | first }}">{{ uniqueYears | first }}</a> to <a href="#y{{ uniqueYears | last }}">{{ uniqueYears | last }}</a></h3>
+<h3><a href="#m{{ uniqueMonths | first }}">{{ uniqueMonths | first | append: "-01" | date: "%B %Y" }}</a> to <a href="#m{{ uniqueMonths | last }}">{{ uniqueMonths | last | append: "-01" | date: "%B %Y" }}</a></h3>
 
 <table id="timeline" class="table table-striped">
     <tbody>
-        {% for year in uniqueYears %}
-        <tr id="y{{ year }}">
+        {% for month in uniqueMonths %}
+        <tr id="m{{ month }}">
             <th>
-                <h3>{{ year }}</h3>
+                <h3>{{ month | append: "-01" | date: "%B %Y" }}</h3>
             </th>
             <td>
                 <div class="row">
-                    {%- assign inYear = items | where_exp: 'item', 'item[field] contains year' -%}
-                    {% for item in inYear %}
+                    {%- assign inMonth = items | where_exp: 'item', 'item[field] contains month' -%}
+                    {% for item in inMonth %}
                     <div class="col-lg-4 col-md-6">
                         <a href="{% if item.parentid == nil %}{{ '/item.html' | relative_url | append: '?id=' | append: item.objectid }}{% elsif item.parentid %}{{ '/item.html' | relative_url | append: '?id=' | append: item.parentid | relative_url }}#{{ item.objectid }}{% endif %}" >
                             {% if item.format contains 'image' or item.youtubeid %}
