@@ -14,9 +14,7 @@ custom-foot: js/timeline-js.html
 {% endif %}
 {%- assign items = items | where_exp: 'item','item[field]' -%}
 {%- assign raw-dates = items | map: field | compact | uniq -%}
-{%- capture clean-months -%}{% for date in raw-dates %}{% if date contains "-" %}{% assign parts = date | strip | split: "-" %}{{ parts[0] }}-{{ parts[1] }}{% elsif date contains "/" %}{% assign parts = date | strip | split: "/" %}{{ parts[2] }}-{{ parts[0] }}{% else %}{{ date | strip }}{% endif %}{% unless forloop.last %};{% endunless %}
-{% endfor %}
-{%- endcapture -%}
+{%- capture clean-months -%}{%- for date in raw-dates -%}{%- assign parts = date | strip | split: "-" -%}{%- if parts.size >= 2 -%}{{ parts[0] }}-{{ parts[1] }}{%- else -%}{{ date | strip }}{%- endif -%}{%- unless forloop.last -%};{%- endunless -%}{%- endfor -%}{%- endcapture -%}
 {%- assign uniqueMonths = clean-months | replace: ";;",";" | split: ";" | compact | uniq | sort -%}
 
 {%- if site.data.theme.year-navigation -%}
@@ -31,25 +29,27 @@ custom-foot: js/timeline-js.html
     </button>
     <div class="dropdown-menu" aria-labelledby="yearButton">
         {% for m in navMonths %}
-        <a class="dropdown-item" href="#m{{ m }}">{{ m | append: "-01" | date: "%B %Y" }}</a>{% endfor %}
+        <a class="dropdown-item" href="#m{{ m | strip }}">{{ m | strip | append: "-01" | date: "%B %Y" }}</a>{% endfor %}
     </div>
 </div>
 {%- endif -%}
 
 {{ content }}
 
-<h3><a href="#m{{ uniqueMonths | first }}">{{ uniqueMonths | first | append: "-01" | date: "%B %Y" }}</a> to <a href="#m{{ uniqueMonths | last }}">{{ uniqueMonths | last | append: "-01" | date: "%B %Y" }}</a></h3>
+d: "-01" | date: "%B %Y" }}</a> to <a href="#m{{ uniqueMonths | last | strip }}">{{ uniqueMonths | last | strip | append: "-01" | date: "%B %Y" }}</a></h3>
 
 <table id="timeline" class="table table-striped">
     <tbody>
         {% for month in uniqueMonths %}
-        <tr id="m{{ month }}">
+        {% assign m_clean = month | strip %}
+        {%- if m_clean != "" -%}
+        <tr id="m{{ m_clean }}">
             <th>
-                <h3>{{ month | append: "-01" | date: "%B %Y" }}</h3>
+                <h3>{{ m_clean | append: "-01" | date: "%B %Y" }}</h3>
             </th>
             <td>
                 <div class="row">
-                    {%- assign inMonth = items | where_exp: 'item', 'item[field] contains month' -%}
+                    {%- assign inMonth = items | where_exp: 'item', 'item[field] contains m_clean' -%}
                     {% for item in inMonth %}
                     <div class="col-lg-4 col-md-6">
                         <a href="{% if item.parentid == nil %}{{ '/item.html' | relative_url | append: '?id=' | append: item.objectid }}{% elsif item.parentid %}{{ '/item.html' | relative_url | append: '?id=' | append: item.parentid | relative_url }}#{{ item.objectid }}{% endif %}" >
@@ -77,6 +77,7 @@ custom-foot: js/timeline-js.html
                 </div>
             </td>
         </tr>
+        {%- endif -%}
         {% endfor %}
     </tbody>
 </table>
